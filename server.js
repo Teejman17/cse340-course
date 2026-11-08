@@ -48,7 +48,7 @@ app.get('/organizations', async (req, res) => {
 app.get('/projects', async (req, res) => {
     try {
         const projects = await getAllProjects();
-        console.log("Projects feched successfully", projects);
+        console.log('projects fetched successfully', projects.length);
         const title = 'Service Projects';
         res.render('projects', { title, projects });
     } catch (error) {
@@ -71,10 +71,3 @@ app.listen(PORT, async () => {
         console.error('error connecting to the database:', error.message);
     }
 });
-
-// try {
-//     const projects = await getAllProjects();
-//     console.log(projects);
-// } catch (error) {
-//     console.error('error fetching projects:', error.message);
-// }
