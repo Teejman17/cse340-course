@@ -48,7 +48,7 @@ app.get('/organizations', async (req, res) => {
 app.get('/projects', async (req, res) => {
     try {
         const projects = await getAllProjects();
-        console.log('projects fetched successfully', projects.length);
+        // console.log('projects fetched successfully', projects.length);
         const title = 'Service Projects';
         res.render('projects', { title, projects });
     } catch (error) {
