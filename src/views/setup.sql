@@ -76,3 +76,70 @@ SELECT
 FROM projects
 JOIN organizations ON projects.organization_id = organizations.organization_id
 ORDER BY projects.project_id;
+
+-- ========================================
+-- Create table categories and junction table
+-- ========================================
+
+CREATE TABLE categories (
+	category_id SERIAL PRIMARY KEY,
+	name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE project_categories (
+	project_id INTEGER REFERENCES projects(project_id) ON DELETE CASCADE,
+	category_id INTEGER REFERENCES categories(category_id) ON DELETE CASCADE,
+	PRIMARY KEY (project_id, category_id)
+);
+
+-- ========================================
+-- Insert sample data: Categories
+-- ========================================
+
+INSERT INTO categories (name)
+VALUES
+('Environmental'),
+('Educational'),
+('Community Service'),
+('Health and Wellness');
+
+-- ===================================================
+-- Insert sample linking data: Projects and Categories
+-- ===================================================
+
+INSERT INTO project_categories (project_id, category_id) VALUES 
+    -- Environmental Projects
+    (1, 1),
+    (2, 1),
+    (3, 1),
+    (4, 1),
+    (5, 1),
+    
+    -- Educational Projects
+    (7, 2),
+    (11, 2),
+    (12, 2),
+    (13, 2),
+    (14, 2),
+    
+    -- Community Service Projects (including multi-category overlaps)
+    (4, 3),  -- Senior Center Garden Beds (Environmental + Community Service)
+    (6, 3),
+    (8, 3),
+    (9, 3),
+    (10, 3),
+    (11, 3), -- Youth Mentorship (Educational + Community Service)
+    (12, 3), -- Library Beautification (Educational + Community Service)
+    (13, 3), -- Backpack Drive (Educational + Community Service)
+    (15, 3);
+
+-- ========================================
+-- Verify Inserted sample data: Categories
+-- ========================================
+
+SELECT p.project_id, p.title AS project_title, c.name AS category_name 
+FROM projects p
+JOIN project_categories pc ON p.project_id = pc.project_id
+JOIN categories c ON pc.category_id = c.category_id
+ORDER BY p.project_id;
+
