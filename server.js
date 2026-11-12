@@ -2,9 +2,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js';
-import { getAllOrganizations } from './src/models/organizations.js';
-import { getAllProjects } from './src/models/projects.js';
-import { getAllCategories } from './src/models/categories.js';
+import router from './src/routes.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -47,51 +45,7 @@ app.use((req, res, next) => {
     next();
 });
 
-/**
- * Routes
- */
-
-app.get('/', async (req, res) => {
-    const title = 'Home';
-    res.render('home', { title });
-});
-
-app.get('/organizations', async (req, res) => {
-    const organizations = await getAllOrganizations();
-    
-    const title = 'Our Partner Organizations';
-    res.render('organizations', { title, organizations });
-});
-
-app.get('/projects', async (req, res) => {
-    try {
-        const projects = await getAllProjects();
-        // console.log('projects fetched successfully', projects.length);
-        const title = 'Service Projects';
-        res.render('projects', { title, projects });
-    } catch (error) {
-        console.error('error fetching projects:', error.message);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-app.get('/categories', async (req, res) => {
-    try {
-        const categories = await getAllCategories();
-        const title = 'Categories';
-        res.render('categories', { title, categories });
-    } catch (error) {
-        console.error('error in loading categories:', error.message);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// Test route for 500 errors
-app.get('/test-error', (req, res, next) => {
-    const err = new Error('This is a test error');
-    err.status = 500;
-    next(err);
-});
+app.use(router);
 
 // Catch all route for 404 errors
 app.use((req, res, next) => {
