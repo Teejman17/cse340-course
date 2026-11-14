@@ -1,0 +1,28 @@
+<!-- src/views/project.ejs -->
+<%- include('partials/header') %>
+    <main>
+        <h1>
+            <%= project.title %>
+        </h1>
+        <p><strong>Description:</strong>
+            <%= project.description %>
+        </p>
+        <p>
+            <strong>Date:</strong>
+            <% const formattedDate=project.date ? project.date.toLocaleDateString() : 'TBD' ; %>
+                <%= formattedDate %>
+        </p>
+        <p><strong>Location:</strong>
+            <%= project.location %>
+        </p>
+        <p>
+            <strong>Partner Organization:</strong>
+            <a href="/organization/<%= project.organization_id %>">
+                <%= project.organization_name %>
+            </a>
+        </p>
+
+        <br>
+        <a href="/projects">← Back to Upcoming Projects</a>
+    </main>
+    <%- include('partials/footer') %>
