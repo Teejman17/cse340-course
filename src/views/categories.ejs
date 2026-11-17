@@ -4,9 +4,17 @@
     <p>Welcome to the categories page. Here you can browse through different categories of content.</p>
     <div class="category-container">
         <ul class="category-list">
-            <% categories.forEach(category => { %>
-                <li><%= category.name %></></li>
-            <% }) %>
+            <% if (categories && categories.length > 0) { %>
+                <% categories.forEach(category => { %>
+                    <li>
+                        <a href="/category/<%= category.category_id %>">
+                            <%= category.name %>
+                        </a>
+                    </li>
+                <% }) %>
+            <% } else { %>
+                <p>No categories found.</p>
+            <% } %>
         </ul>
     </div>
     
