@@ -40,7 +40,7 @@ const getUpcomingProjects = async (number_of_projects) => {
 
 }
 
-async function getProjectDetails(id) {
+const getProjectDetails = async (id) => {
     const query = `
     SELECT
         projects.project_id AS project_id,
