@@ -1,4 +1,4 @@
-import { getAllProjects, getProjectDetails, getUpcomingProjects, createProject } from '../models/projects.js';
+import { getAllProjects, getProjectDetails, getUpcomingProjects, createProject, updateProject,  } from '../models/projects.js';
 import { getCategoriesByProjectId, getProjectByCategoryId } from '../models/categories.js';
 import { getAllOrganizations } from '../models/organizations.js';
 import { body, validationResult } from 'express-validator';
@@ -57,7 +57,7 @@ const showNewProjectForm = async (req, res) => {
     const title = 'Add New Service Project';
 
     res.render('new-project', { title, organizations });
-}
+};
 
 const processNewProjectForm = async (req, res) => {
     const { title, description, location, date, organizationId } = req.body;
@@ -80,6 +80,32 @@ const processNewProjectForm = async (req, res) => {
         res.redirect('/new-project');
     }
 
-}
+};
 
-export { showProjectsPage, showProjectDetailsPage, showNewProjectForm, processNewProjectForm, projectValidation };
+const showEditProjectForm = async (req, res) => {
+    const projectId = req.params.id;
+    const projectDetails = await getProjectDetails(projectId);
+
+    const title = 'Edit Service Project';
+    const organizations = await getAllOrganizations();
+    res.render('edit-project', { title, projectDetails, organizations });
+};
+
+const processEditProjectForm = async (req, res) => {
+    const projectId = req.params.id;
+    const results = validationResult(req);
+
+    if (!results.isEmpty()) {
+        results.array().forEach((error) => {
+            req.flash('error', error.msg);
+        });
+        return res.redirect(`/edit-project/${projectId}`);
+    }
+    const { title, description, location, date, organizationId } = req.body;
+    await updateProject(projectId, title, description, location, date, organizationId);
+    req.flash('success', 'Project updated successfully');
+
+    res.redirect(`/project/${projectId}`);
+};
+
+export { showProjectsPage, showProjectDetailsPage, showNewProjectForm, processNewProjectForm, projectValidation, showEditProjectForm, processEditProjectForm };
