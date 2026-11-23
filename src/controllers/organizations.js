@@ -1,4 +1,4 @@
-import { getAllOrganizations, createOrganization } from '../models/organizations.js';
+import { getAllOrganizations, createOrganization, getOrganizationDetails, updateOrganization } from '../models/organizations.js';
 import { body, validationResult } from 'express-validator';
 
 const organizationValidation = [
@@ -11,7 +11,7 @@ const organizationValidation = [
     body('description')
         .trim()
         .notEmpty()
-        .withMessage('Organizationd description is required.')
+        .withMessage('Organization description is required.')
         .isLength({ max: 500 })
         .withMessage('Organization description cannot exceed 500 characters.'),
     body('contactEmail')
@@ -50,8 +50,34 @@ const processNewOrganizationForm = async (req, res) => {
     const organizationId = await createOrganization(name, description, contactEmail, logoFilename);
 
     req.flash('success', 'Organization added successfully!');
-    
+
     res.redirect(`/organization/${organizationId}`);
 };
 
-export { showOrganizationPage, showNewOrganizationForm, processNewOrganizationForm, organizationValidation };
+const showEditOrganizationForm = async (req, res) => {
+    const organizationId = req.params.id;
+    const organizationDetails = await getOrganizationDetails(organizationId);
+
+    const title = 'Edit Organization';
+    res.render('edit-organization', { title, organizationDetails });
+};
+
+const processEditOrganizationForm = async (req, res) => {
+    const organizationId = req.params.id;
+    const results = validationResult(req);
+
+    if (!results.isEmpty()) {
+        results.array().forEach((error) => {
+            req.flash('error', error.msg);
+        });
+        return res.redirect(`/edit-organization/${organizationId}`);
+    }
+
+    const { name, description, contactEmail, logoFilename } = req.body;
+    await updateOrganization(organizationId, name, description, contactEmail, logoFilename);
+    req.flash('success', 'Organization updated successfully!');
+
+    res.redirect(`/organization/${organizationId}`);
+};
+
+export { showOrganizationPage, showNewOrganizationForm, processNewOrganizationForm, organizationValidation, showEditOrganizationForm, processEditOrganizationForm };
