@@ -28,12 +28,13 @@ const number_of_upcoming_projects = 5;
 
 const showProjectsPage = async (req, res) => {
     const projects = await getUpcomingProjects(number_of_upcoming_projects);
+    const title = 'Service Projects';
+
     res.render('projects', {
         title: 'Upcoming Service Projects',
         projects: projects
     });
 
-    const title = 'Service Projects';
 };
 
 const showProjectDetailsPage = async (req, res) => {
@@ -82,12 +83,29 @@ const processNewProjectForm = async (req, res) => {
 
 };
 
+const formatDate = (dateValue) => {
+    if (!dateValue) return '';
+    if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+        return dateValue;
+    }
+
+    const parsed = dateValue instanceof Date ? dateValue : new Date(dateValue);
+    if (Number.isNaN(parsed.getTime())) return '';
+    const year = parsed.getFullYear();
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const day = String(parsed.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const showEditProjectForm = async (req, res) => {
     const projectId = req.params.id;
     const projectDetails = await getProjectDetails(projectId);
 
+    const formattedDate = formatDate(projectDetails.date);
+
     const title = 'Edit Service Project';
     const organizations = await getAllOrganizations();
+
     res.render('edit-project', { title, projectDetails, organizations });
 };
 
