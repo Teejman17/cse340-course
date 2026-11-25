@@ -106,7 +106,7 @@ const showEditProjectForm = async (req, res) => {
     const title = 'Edit Service Project';
     const organizations = await getAllOrganizations();
 
-    res.render('edit-project', { title, projectDetails, organizations });
+    res.render('edit-project', { title, projectDetails, organizations, formattedDate });
 };
 
 const processEditProjectForm = async (req, res) => {
