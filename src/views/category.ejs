@@ -20,5 +20,7 @@
         <% } else { %>
             <p>No projects found in this category.</p>
         <% } %>
+        <p><a href="/edit-category/<%= category.category_id %>">Edit Category</a></p>
+
     </main>
     <%- include('partials/footer') %>

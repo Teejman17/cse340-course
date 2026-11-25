@@ -24,6 +24,41 @@ const getCategoryById = async (category_id) => {
     return result.rows[0];
 };
 
+const createCategory = async (name) => {
+    const query = `
+        INSERT INTO categories (name)
+        VALUES ($1)
+        RETURNING category_id;
+    `;
+
+    const result = await db.query(query, [name]);
+    if (result.rows.length === 0) {
+        throw new Error('Failed to create category');
+    }
+    if (process.env.ENABLE_SQL_LOGGING === 'true') {
+        console.log('Created category:', result.rows[0].category_id);
+    }
+    return result.rows[0].category_id;
+};
+
+const editCategory = async (categoryId, name) => {
+    const query = `
+        UPDATE categories
+        SET name = $1
+        WHERE category_id =$2
+        RETURNING category_id;
+    `;
+
+    const result = await db.query(query, [name, categoryId]);
+    if (result.rows.length === 0) {
+        throw new Error('Failed to update category');
+    }
+    if (process.env.ENABLE_SQL_LOGGING === 'true') {
+        console.log('Updated category:', result.rows[0].category_id);
+    }
+    return result.rows[0].category_id;
+};
+
 const getCategoriesByProjectId = async (project_id) => {
     const query = `
     SELECT c.category_id,
@@ -59,10 +94,10 @@ const assignCategoryToProject = async (projectId, categoryId) => {
     await db.query(query, [categoryId, projectId]);
 };
 
-const updateCateogoryAssignments = async (projectId, categoryIds) => {
+const updateCategoryAssignments = async (projectId, categoryIds) => {
     const deleteQuery = `
     DELETE FROM project_categories
-    WEHERE project_id = $1;
+    WHERE project_id = $1;
     `;
 
     await db.query(deleteQuery, [projectId]);
@@ -72,4 +107,4 @@ const updateCateogoryAssignments = async (projectId, categoryIds) => {
     };
 };
 
-export { getAllCategories, getCategoryById, getCategoriesByProjectId, getProjectByCategoryId, assignCategoryToProject, updateCateogoryAssignments };
+export { getAllCategories, getCategoryById, createCategory, editCategory, getCategoriesByProjectId, getProjectByCategoryId, assignCategoryToProject, updateCategoryAssignments };
